@@ -1,0 +1,17 @@
+{
+    "name": "i74ifa/gpapi",
+    "autoload": {
+        "psr-4": {
+            "I74ifa\\Gpapi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "i74ifa",
+            "email": "i74ifa@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "orchestra/testbench": "^7.0"
+    }
+}
