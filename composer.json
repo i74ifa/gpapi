@@ -1,8 +1,18 @@
 {
+    
     "name": "i74ifa/gpapi",
+    "type": "library",
+    "description": "package to solve the problem of increasing unused data in api.",
+    "keywords": ["api", "laravel", "lumen"],
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "I74ifa\\Gpapi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "I74ifa\\Gpapi\\Tests\\": ["tests/"]
         }
     },
     "authors": [
@@ -12,6 +22,17 @@
         }
     ],
     "require-dev": {
-        "orchestra/testbench": "^7.0"
+        "orchestra/testbench": "^7.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "extra": {
+        "laravel": {
+            "provider": [
+                "I74ifa\\Gpapi\\GpapiServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
