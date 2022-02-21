@@ -5,8 +5,13 @@ namespace I74ifa\Gpapi;
 use Illuminate\Http\JsonResponse;
 use Exception;
 use Illuminate\Support\Str;
-class RelatedModel
+trait RelatedModel
 {
+
+    protected $modelContainer = '\\App\\Models\\';
+
+    protected $resourceContainer =  '\\App\\Http\\Resources\\';
+
     /**
      * @throws \ReflectionException
      */
@@ -28,7 +33,7 @@ class RelatedModel
     private function resourceClass($class)
     {
         $class = $this->singularTitle($class);
-        if (class_exists($class = 'App\\Http\\Resources\\' . $class . 'Resource')) {
+        if (class_exists($class = $this->resourceContainer . $class . 'Resource')) {
             return $class;
         }
         throw new Exception("[$class]he does not have Resource");
@@ -37,7 +42,7 @@ class RelatedModel
 
     public function getModel($table)
     {
-        $modelName = 'App\\Models\\' . $this->singularTitle($table);
+        $modelName = $this->modelContainer . $this->singularTitle($table);
         if (class_exists($modelName)) {
             return $modelName;
         }

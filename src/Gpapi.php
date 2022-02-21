@@ -4,8 +4,8 @@ namespace I74ifa\Gpapi;
 
 trait Gpapi
 {
-    use RelatedModel;
 
+    use RelatedModel;
 
     private $relations;
 
@@ -13,7 +13,7 @@ trait Gpapi
 
     public function spiltRelations($data)
     {
-//        return preg_split($data, "/\[[^[]+\](*SKIP)(*FAIL)|,\s*/");
+        //        return preg_split($data, "/\[[^[]+\](*SKIP)(*FAIL)|,\s*/");
         return preg_split("/\[[^[]+\](*SKIP)(*FAIL)|,\s*/", $data);
     }
 
@@ -24,12 +24,33 @@ trait Gpapi
 
     public function withRelations($relations)
     {
+        $returnRelations = [];
         foreach ($this->spiltRelations($relations) as $relation) {
             $this->resolveRelationParams($relation);
         }
 
+        foreach ($this->getRelations() as ['relation' => $relation, 'params' => $params]) {
+            if ($this->$relation) {
+                if ($this->relationHasOne($this->$relation)) {
+                    $returnRelations[$relation] = $this->getResource($relation)::make($this->$relation);
+                }else {
+                    $returnRelations[$relation] = $this->getResource($relation)::collection($this->$relation);
+                }
+            }
+        }
+
+        return $returnRelations;
     }
 
+
+    private function relationHasOne($relation): bool
+    {
+        if (isset($relation->id)) {
+            return true;
+        }
+
+        return false;
+    }
 
     public function paramShow($params)
     {
@@ -41,14 +62,13 @@ trait Gpapi
         if (preg_match('/(.*)\[([^[]+)\]/', $relation, $match)) {
             $this->relations[] = [
                 'relation' => $match[1],
-                'params' => $match[2]
+                'params' => preg_split('/\,\s?/', $match[2])
             ];
         } else {
             $this->relations[] = [
                 'relation' => $relation
             ];
         }
-   
     }
 
     public function simpleRelations($param)
