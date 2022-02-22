@@ -5,6 +5,7 @@
     "description": "package to solve the problem of increasing unused data in api.",
     "keywords": ["api", "laravel", "lumen"],
     "license": "MIT",
+    "version": "0.1",
     "autoload": {
         "psr-4": {
             "I74ifa\\Gpapi\\": "src/"
