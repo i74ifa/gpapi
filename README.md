@@ -13,70 +13,41 @@ The work is started in the trait class called Gpapi
 We add it to the Resource Class to be supported after that
 
 Let's start a project to show the way
+### Relations param form
 
-Models:
-```php
-// App\Models\Post
-<?php
+We will stick to this formula
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Post extends Model
-{
-
-    public function tags()
-    {
-        return $this->morphToMany(Tag::class, 'taggable');
-    }
-}
+```
+localhost/bestApi/api/post/1?relations=tags
 ```
 
-```php
-// App\Models\Tag
-<?php
+```relations=tags``` We want a relationship **tags**
 
-namespace App\Models;
+Define params for a given relationship ```Not supported yet```
 
-use Illuminate\Database\Eloquent\Model;
-
-class Tag extends Model
-{
-
-
-    public function questions()
-    {
-        return $this->morphTo(Question::class);
-    }
-}
+```
+localhost/bestApi/api/post/1?relations=tags[id, name]
 ```
 
-Resources:
 
+## Models
+
++ App\Models\Post
++ App\Models\Tag
+
+## Resources
 ```php
 <?php
 
 namespace App\Http\Resources;
 
-use I74ifa\Gpapi\Gpapi;
-use I74ifa\Gpapi\Interfaces\interfaceGpapi;
-use I74ifa\Gpapi\RelatedModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class QuestionResource extends JsonResource implements interfaceGpapi
+class PostResource extends JsonResource
 {
-    use Gpapi;
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
-        return $this->resolveParams($request);
         return parent::toArray($request);
     }
 
@@ -92,12 +63,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TagResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
         return parent::toArray($request);
@@ -107,16 +72,35 @@ class TagResource extends JsonResource
 
 This is the default resources
 
-Note that we have added use **Gpapi** in **PostResource**
+Let's support PostResource
+```php
+use I74ifa\Gpapi\Gpapi
+use I74ifa\Gpapi\Interfaces\interfaceGpapi;
 
+class QuestionResource extends JsonResource implements interfaceGpapi
+{
+    use Gpapi;
+    
+    public function toArray($request)
+    {
 
-### request form
+        return $this->resolveRelations($request);
+    }
+
+    public function resolveRelations($request)
+    {
+        $data = [
+            'id' => $this->getKey(),
+            'table' => $this->getTable(),
+            'data' => [
+                'title' => $this->title,
+                // ...any_params
+            ],
+        ];
+        // If a route contains relations
+        if ($request->has('relations')) {
+            $data['relationships'] = $this->withRelations($request->get('relations'));
+        }
+    }
 
 ```
-localhost/bestApi/api/post/1?show&relations=tags
-```
-
-```show``` Display style starting point ```Very necessary```
-
-```relations=tags``` We want a relationship **tags**
-
