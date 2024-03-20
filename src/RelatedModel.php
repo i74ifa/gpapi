@@ -36,7 +36,7 @@ trait RelatedModel
         if (class_exists($class = $this->resourceContainer . $class . 'Resource')) {
             return $class;
         }
-        throw new Exception("[$class]he does not have Resource");
+        throw new Exception("[$class] not exist please make it first");
 
     }
 

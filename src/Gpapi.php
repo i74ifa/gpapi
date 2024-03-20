@@ -2,6 +2,9 @@
 
 namespace I74ifa\Gpapi;
 
+use Exception;
+use Illuminate\Support\Collection;
+
 trait Gpapi
 {
 
@@ -30,12 +33,17 @@ trait Gpapi
         }
 
         foreach ($this->getRelations() as ['relation' => $relation, 'params' => $params]) {
-            if ($this->$relation) {
-                if ($this->relationHasOne($this->$relation)) {
-                    $returnRelations[$relation] = $this->getResource($relation)::make($this->$relation);
-                }else {
-                    $returnRelations[$relation] = $this->getResource($relation)::collection($this->$relation);
-                }
+            $relationData = $this->$relation();
+
+            if ($params) {
+                $relationData = $relationData->select($params)->getResults();
+            }
+
+            $resourceClass = $this->getResource($relation);
+            if ($relationData instanceof Collection) {
+                $returnRelations[$relation] = $resourceClass::collection($relationData);
+            }else {
+                $returnRelations[$relation] = $resourceClass::make($relationData);
             }
         }
 
@@ -66,9 +74,23 @@ trait Gpapi
             ];
         } else {
             $this->relations[] = [
-                'relation' => $relation
+                'relation' => $relation,
+                'params' => [],
             ];
         }
+    }
+
+    public function getParams($params)
+    {
+        $data = [];
+        if (preg_match('/(.*)\[([^[]+)\]/', $params, $match)) {
+            foreach (preg_split('/\,\s?/', $match[2]) as $column) {
+                $data[$column] = $this->$column;
+            }
+            return $data;
+        }
+
+        return [];
     }
 
     public function simpleRelations($param)

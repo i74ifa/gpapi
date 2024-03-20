@@ -4,7 +4,7 @@
 
 + response specific relationships
 + response specific response params
-+ ~~response params from relationships~~ ```Underway```
++ response params from relationships
 
 ## how is work
 
@@ -18,15 +18,15 @@ Let's start a project to show the way
 We will stick to this formula
 
 ```
-localhost/bestApi/api/post/1?relations=tags
+gpapi.test/bestApi/api/post/1?relations=tags
 ```
 
 ```relations=tags``` We want a relationship **tags**
 
-Define params for a given relationship ```Not supported yet```
+Define params for a given relationship
 
 ```
-localhost/bestApi/api/post/1?relations=tags[id, name]
+gpapi.test/bestApi/api/post/1?relations=tags[id, name]
 ```
 
 
@@ -92,10 +92,7 @@ class QuestionResource extends JsonResource implements interfaceGpapi
         $data = [
             'id' => $this->getKey(),
             'table' => $this->getTable(),
-            'data' => [
-                'title' => $this->title,
-                // ...any_params
-            ],
+            'data' => $this->getParams($request->get('params')),
         ];
         // If a route contains relations
         if ($request->has('relations')) {
